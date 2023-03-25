@@ -1,6 +1,6 @@
 module github.com/Thiht/smocker
 
-go 1.15
+go 1.18
 
 require (
 	github.com/Masterminds/sprig/v3 v3.2.2
