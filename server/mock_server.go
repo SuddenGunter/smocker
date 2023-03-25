@@ -1,6 +1,7 @@
 package server
 
 import (
+	"io"
 	"net/http"
 	"strconv"
 
@@ -13,6 +14,8 @@ import (
 
 func NewMockServer(cfg config.Config) (*http.Server, services.Mocks) {
 	mockServerEngine := echo.New()
+	mockServerEngine.Logger.SetOutput(io.Discard)
+	mockServerEngine.StdLogger = nil
 	persistence := services.NewPersistence(cfg.PersistenceDirectory)
 	sessions, err := persistence.LoadSessions()
 	if err != nil {
@@ -22,7 +25,7 @@ func NewMockServer(cfg config.Config) (*http.Server, services.Mocks) {
 
 	mockServerEngine.HideBanner = true
 	mockServerEngine.HidePort = true
-	mockServerEngine.Use(recoverMiddleware(), loggerMiddleware(), HistoryMiddleware(mockServices))
+	mockServerEngine.Use(HistoryMiddleware(mockServices))
 
 	handler := handlers.NewMocks(mockServices)
 	mockServerEngine.Any("/*", handler.GenericHandler)

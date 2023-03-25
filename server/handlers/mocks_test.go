@@ -1,15 +1,17 @@
 package handlers_test
 
 import (
+	"io"
+	"net/http"
+	"sync"
+	"testing"
+	"time"
+
 	"github.com/Thiht/smocker/server"
 	"github.com/Thiht/smocker/server/config"
 	"github.com/Thiht/smocker/server/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"io"
-	"net/http"
-	"testing"
-	"time"
 )
 
 func TestMocks_GenericHandler(t *testing.T) {
@@ -36,7 +38,7 @@ func TestMocks_GenericHandler(t *testing.T) {
 			Body:   "test",
 		},
 		Context: &types.MockContext{
-			Times: 200,
+			Times: 30000,
 		},
 	})
 	require.NoError(t, err)
@@ -47,14 +49,25 @@ func TestMocks_GenericHandler(t *testing.T) {
 		}
 	}()
 
-	for i := 0; i < 1; i++ {
-		resp, err := http.Get("http://localhost:8080/api/v1")
-		require.NoError(t, err)
+	wg := &sync.WaitGroup{}
+	wg.Add(10)
+	for i := 0; i < 10; i++ {
+		go func() {
+			defer wg.Done()
+			for j := 0; j < 3000; j++ {
+				resp, err := http.Get("http://localhost:8080/api/v1")
+				require.NoError(t, err)
 
-		body, err := io.ReadAll(resp.Body)
-		require.NoError(t, err)
+				body, err := io.ReadAll(resp.Body)
+				require.NoError(t, err)
 
-		assert.Equal(t, 200, resp.StatusCode)
-		assert.Equal(t, "test", string(body))
+				assert.Equal(t, 200, resp.StatusCode)
+				assert.Equal(t, "test", string(body))
+			}
+		}()
 	}
+
+	wg.Wait()
+
+	assert.Equal(t, 30000, session.Clone().Mocks.Clone()[0].Context.Times)
 }
