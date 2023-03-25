@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - bugs/times-count-race
     tags:
       - '*.*.*' # semver, will override latest
       - '*-preview' # preview, won't override latest
