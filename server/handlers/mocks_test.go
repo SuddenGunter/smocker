@@ -38,7 +38,7 @@ func TestMocks_GenericHandler(t *testing.T) {
 			Body:   "test",
 		},
 		Context: &types.MockContext{
-			Times: 30000,
+			Times: 60000,
 		},
 	})
 	require.NoError(t, err)
@@ -50,8 +50,8 @@ func TestMocks_GenericHandler(t *testing.T) {
 	}()
 
 	wg := &sync.WaitGroup{}
-	wg.Add(10)
-	for i := 0; i < 10; i++ {
+	wg.Add(20)
+	for i := 0; i < 20; i++ {
 		go func() {
 			defer wg.Done()
 			for j := 0; j < 3000; j++ {
@@ -69,5 +69,5 @@ func TestMocks_GenericHandler(t *testing.T) {
 
 	wg.Wait()
 
-	assert.Equal(t, 30000, session.Clone().Mocks.Clone()[0].Context.Times)
+	assert.Equal(t, 60000, session.Clone().Mocks.Clone()[0].State.TimesCount)
 }
