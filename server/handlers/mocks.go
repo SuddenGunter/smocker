@@ -50,7 +50,7 @@ func (m *Mocks) GenericHandler(c echo.Context) error {
 	for _, mock := range mocks {
 		if mock.Request.Match(actualRequest) {
 			matchingMock = mock
-			if matchingMock.Context.Times > 0 && matchingMock.State.TimesCount.Load() >= int64(matchingMock.Context.Times) {
+			if matchingMock.Context.Times > 0 && matchingMock.State.TimesCount.Load() >= int32(matchingMock.Context.Times) {
 				b, _ = yaml.Marshal(mock)
 				log.Tracef("Times exceeded, skipping mock:\n---\n%s\n", string(b))
 				exceededMocks = append(exceededMocks, mock)
