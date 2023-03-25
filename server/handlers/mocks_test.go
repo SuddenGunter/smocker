@@ -69,5 +69,5 @@ func TestMocks_GenericHandler(t *testing.T) {
 
 	wg.Wait()
 
-	assert.Equal(t, 60000, session.Clone().Mocks.Clone()[0].State.TimesCount)
+	assert.Equal(t, uint64(60000), session.Clone().Mocks.Clone()[0].State.TimesCount.Load())
 }

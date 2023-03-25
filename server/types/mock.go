@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -68,6 +69,7 @@ func (m *Mock) Init() {
 	m.State = &MockState{
 		ID:           shortid.MustGenerate(),
 		CreationDate: time.Now(),
+		TimesCount:   &atomic.Uint64{},
 	}
 
 	if m.Context == nil {
@@ -77,11 +79,14 @@ func (m *Mock) Init() {
 
 func (m *Mock) Verify() bool {
 	isTimesDefined := m.Context.Times > 0
-	hasBeenCalledRightNumberOfTimes := m.State.TimesCount == int32(m.Context.Times)
+	hasBeenCalledRightNumberOfTimes := m.State.TimesCount.Load() == uint64(m.Context.Times)
 	return !isTimesDefined || hasBeenCalledRightNumberOfTimes
 }
 
 func (m *Mock) CloneAndReset() *Mock {
+	count := m.State.TimesCount.Load()
+	atomicCount := &atomic.Uint64{}
+	atomicCount.Store(count)
 	return &Mock{
 		Request: m.Request,
 		Context: m.Context,
@@ -89,6 +94,7 @@ func (m *Mock) CloneAndReset() *Mock {
 			ID:           m.State.ID,
 			CreationDate: time.Now(),
 			Locked:       m.State.Locked,
+			TimesCount:   atomicCount,
 		},
 		DynamicResponse: m.DynamicResponse,
 		Proxy:           m.Proxy,
@@ -270,8 +276,8 @@ type MockContext struct {
 }
 
 type MockState struct {
-	ID           string    `json:"id" yaml:"id"`
-	TimesCount   int32     `json:"times_count" yaml:"times_count"`
-	Locked       bool      `json:"locked" yaml:"locked"`
-	CreationDate time.Time `json:"creation_date" yaml:"creation_date"`
+	ID           string         `json:"id" yaml:"id"`
+	TimesCount   *atomic.Uint64 `json:"times_count" yaml:"times_count"`
+	Locked       bool           `json:"locked" yaml:"locked"`
+	CreationDate time.Time      `json:"creation_date" yaml:"creation_date"`
 }
