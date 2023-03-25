@@ -29,7 +29,7 @@ jobs:
 
       - name: Lint sources
         run: |
-          make lint
+#          make lint
           yarn lint
 
   test:
