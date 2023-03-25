@@ -2,7 +2,7 @@ name: CI
 on:
   push:
     branches:
-      - nosonar
+      - master
     tags:
       - '*.*.*' # semver, will override latest
       - '*-preview' # preview, won't override latest
@@ -29,7 +29,6 @@ jobs:
 
       - name: Lint sources
         run: |
-#          make lint
           yarn lint
 
   test:
