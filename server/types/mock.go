@@ -67,8 +67,9 @@ func (m *Mock) Validate() error {
 
 func (m *Mock) Init() {
 	m.State = &MockState{
-		CreationDate: time.Now(),
 		ID:           shortid.MustGenerate(),
+		TimesCount:   &atomic.Int64{},
+		CreationDate: time.Now(),
 	}
 
 	if m.Context == nil {
