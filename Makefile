@@ -15,7 +15,7 @@ ifeq ($(RELEASE), 1)
 endif
 GO_LDFLAGS:=-ldflags="$(GO_LDFLAGS)"
 
-DOCKER_ACCOUNT?=thiht
+DOCKER_ACCOUNT?=suddengunter
 DOCKER_IMAGE=$(DOCKER_ACCOUNT)/$(APPNAME)
 
 # See: https://docs.docker.com/engine/reference/commandline/tag/#extended-description
