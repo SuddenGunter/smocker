@@ -48,9 +48,9 @@ jobs:
           cache: yarn
 
       - name: Setup Go environment
-        uses: actions/setup-go@v2.1.3
+        uses: actions/setup-go@v4.0.0
         with:
-          go-version: '^1.18.0'
+          go-version: '^1.20.2'
 
       - run: yarn install --frozen-lockfile
 
@@ -84,9 +84,9 @@ jobs:
           cache: yarn
 
       - name: Setup Go environment
-        uses: actions/setup-go@v2.1.3
+        uses: actions/setup-go@v4.0.0
         with:
-          go-version: '^1.18.0'
+          go-version: '^1.20.2'
 
       - uses: satackey/action-docker-layer-caching@v0.0.11
         continue-on-error: true
